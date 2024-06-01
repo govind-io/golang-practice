@@ -1,18 +1,31 @@
 package main
 
 import (
-	event "api/Models/Events"
+	"api/src/app"
+	"api/src/db"
+	"log"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/joho/godotenv"
 )
 
 func main() {
-	app := fiber.New()
 
-	app.Get("/events", event.GetAllEventsFiber)
+	//Loading ENV variables
+	err := godotenv.Load()
 
-	app.Post("/events", event.SetEvent)
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
 
-	app.Listen(":3000")
+	_, err = db.NewDbConnect()
+
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	app := app.NewServer()
+
+	app.RunServer()
 
 }
